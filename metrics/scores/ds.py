@@ -23,16 +23,18 @@ class DS:
       for j,image2 in enumerate(images):
 
         ms_ssim=tf.image.ssim_multiscale(
-                                  image1, image2, max_val=2
+                                  image1, image2, max_val=255
                               )
         intra+=ms_ssim
           
-    intra=1-(intra/(images.shape[0])**2)
+    intra=1-(intra/((images.shape[0])**2))
     return intra
 
   #calculate inter class diversity
   def calc_inter(self,img):
 
+    #preprocess and predict
+    img=self.preprocess(img)
     preds=self.model.predict(img)
     num_class=preds.shape[-1]
 
@@ -53,13 +55,13 @@ class DS:
     for i in range(self.splits):
 
       img=images[i*num_img//self.splits:(i+1)*num_img//self.splits]
-      dintra=self.calc_inter(img)
-      dinter=self.calc_intra(img)
+      dintra=self.calc_intra(img)
+      dinter=self.calc_inter(img)
       ds=(dinter*dintra)**(0.5)
 
       dss.append(ds)
 
-    return np.mean(dss), np.std(dss)
+    return np.mean(dss), np.std(dss)**2
 
   def calculate(self):
 
@@ -67,9 +69,9 @@ class DS:
 
     for obj in self.object_names:
 
-      #load and preprocess data
+      #load data
       obj_path=Utils.get_path(self.path,obj)
-      images=self.preprocess(Utils.load_images(obj_path,self.input_shape))
+      images=Utils.load_images(obj_path,self.input_shape)
 
       #calculate scores
       score=self.calc_ds(images)

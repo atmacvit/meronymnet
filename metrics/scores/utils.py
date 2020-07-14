@@ -50,7 +50,7 @@ class Utils:
     else:
       return path+obj+os.path.sep+'*'
 
-  #covert a tuple (mean,std) to mean ± std for all values in dictionary
+  #covert a tuple (mean,variance) to mean ± variance for all values in dictionary
   @staticmethod
   def to_string(score):
     string_score={}

@@ -38,7 +38,7 @@ class IS:
 
       is_scores.append(is_score)
 
-    return np.mean(is_score), np.std(is_scores)
+    return np.mean(is_score), np.std(is_scores)**2
 
   def calculate(self):
 
