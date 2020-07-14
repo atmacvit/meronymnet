@@ -57,58 +57,54 @@ if __name__ == '__main__':
   """
   path_fake[string]="path/to/generations_folder"
   path_real [string] (optional)="path/to/training_data" (if not provided then FID and AMS are not calculated)
-  inception [bool] (optional)=whether to use inceptionV3 model (deafult=True)
+  inception [string] (optional) {'True','False'}=whether to use inceptionV3 model (deafult='True')
   path_model [string] (optional)="path/to/saved_model" [only used when inception is not true]
   splits [int] (optional)=Number for splits per-class (default=10)
   object_names [string] (optional)=comma separated string without any space like "cow,person,cat" (defaults to all object names)
 
   sample-use:
-  python 'path/to/metrics.py' --set path_fake="$path_fake" path_real="$path_real" splits="$splits" inception="$inception" object_names="$object_names" path_model="$path_model"
+  python 'path/to/metrics.py' "$path_fake" --path_real "$path_real" --splits="$splits" --inception "$inception" --object_names "$object_names" --path_model "$path_model"
 
   Saves a csv file of metrics in results folder. Results folder must be there in the parent of parent folder of generations. Name of csv file is same as name of generations folder.
   """
 
   #parsing commandline arguments
-  parser = argparse.ArgumentParser()
-  parser.add_argument("--set",
-                        metavar="KEY=VALUE",
-                        nargs='+',
-                        help="Set a number of key-value pairs "
-                             "(do not put spaces before or after the = sign). "
-                             "If a value contains spaces, you should define "
-                             "it with double quotes: "
-                             'foo="this is a sentence". Note that '
-                             "values are always treated as strings.")
+  parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
+  parser.add_argument('path_fake', type=str, metavar='path_fake',help='diectory of generations')
+
+  parser.add_argument('--path_real', type=str, default=None,help='directory of ground truth data')
+
+  parser.add_argument('--path_model', type=str, default=None,help='directory of model')
+    
+  parser.add_argument('--splits', type=int, default=10,help='Number of splits to average the score over')
+
+  parser.add_argument('--inception', type=str, default="True", choices=['true','True','False','false'],help='whether to use inceptionV3 for score calculation')
+
+  parser.add_argument('--object_names', type=str, default=None, help="Comma separated string of objects without any space (Ex: 'cat,cow,dog')-- If none then all objects are considered")
+
+
   args = parser.parse_args()
-  arguments = utils.Utils.parse_vars(args.set)
+    
+  path_fake = args.path_fake
+  path_real = args.path_real
+  path_model = args.path_model
+  splits = args.splits
+  inception = args.inception
+  object_names = args.object_names
 
-  #Handling optional/default arguments
-  if 'path_real' not in arguments:
-    arguments['path_real']=None
+  if object_names is not None:
+    object_names=object_names.split(',')
 
-  if 'path_model' not in arguments:
-    arguments['path_model']=None
-
-  if 'inception' not in arguments:
-    arguments['inception']='True'
-
-  if 'splits' not in arguments:
-    arguments['splits']=10
-
-  if 'object_names' not in arguments:
-    arguments['object_names']=None
-  else:
-    arguments['object_names']=arguments['object_names'].split(',')
-
-  metric=Metrics(**arguments) 
+  metric=Metrics(path_fake,path_real,inception,path_model,splits,object_names) 
 
   scores={}
   scores['IS']=metric.Is()
   scores['MIS']=metric.Mis()
   scores['DS']=metric.Ds()
 
-  #calculate FID and AMS only if training data is also available
-  if arguments['path_real'] is not None: 
+  #calculate FID and AMS only if ground truth data is also available
+  if path_real is not None: 
     scores['FID']=metric.Fid()
     scores['AMS']=metric.Ams()
 
@@ -116,8 +112,7 @@ if __name__ == '__main__':
   df=utils.Utils.make_dataframe(scores)
 
   #save results in results folder with same name as generations folder
-  separated=arguments['path_fake'].split(os.path.sep)
+  separated=path_fake.split(os.path.sep)
   separated[-2]='results'
   result_path=(os.path.sep).join(separated)+'.csv'
   df.to_csv(result_path)
-

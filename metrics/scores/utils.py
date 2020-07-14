@@ -6,25 +6,6 @@ import os
 
 class Utils:
 
-  #parsing command-line arguments into a dictionary
-  @staticmethod
-  def parse_vars(extra_vars):
-     """
-     Take a list of comma seperated key value pair strings, seperated
-     by comma strings like 'foo=bar' and return as dict.
-     :param extra_vars: list[str] ['foo=bar, 'key2=value2']
-     :return: dict[str, str] {'foo': 'bar', 'key2': 'value2'}
-     """
-     vars_list = []
-     if extra_vars:
-         for i in extra_vars:
-            items = i.split('=')
-            key = items[0].strip()
-            if len(items) > 1:
-                value = '='.join(items[1:])
-                vars_list.append((key, value))
-     return dict(vars_list)
-
   #load images in a directory and resize them
   @staticmethod
   def load_images(image_dir,input_shape):
