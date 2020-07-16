@@ -107,7 +107,7 @@ if __name__ == '__main__':
   scores['MIS']=metric.Mis()
   scores['DS']=metric.Ds()
 
-  calculate FID and AMS only if ground truth data is also available
+  #calculate FID and AMS only if ground truth data is also available
   if path_real is not None: 
     scores['FID']=metric.Fid()
     scores['AMS']=metric.Ams()
