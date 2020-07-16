@@ -61,11 +61,12 @@ if __name__ == '__main__':
   path_model [string] (optional)="path/to/saved_model" [only used when inception is not true]
   splits [int] (optional)=Number for splits per-class (default=10)
   object_names [string] (optional)=comma separated string without any space like "cow,person,cat" (defaults to all object names)
+  path_result [string] (optional)="path/to/result.csv" [if not provided then a suitable path is inferred]
 
   sample-use:
-  python 'path/to/metrics.py' "$path_fake" --path_real "$path_real" --splits="$splits" --inception "$inception" --object_names "$object_names" --path_model "$path_model"
+  python 'path/to/metrics.py' "$path_fake" --path_real "$path_real" --splits="$splits" --inception "$inception" --object_names "$object_names" --path_model "$path_model" --path_result "$path_result"
 
-  Saves a csv file of metrics in results folder. Results folder must be there in the parent of parent folder of generations. Name of csv file is same as name of generations folder.
+  Saves a csv file of metrics in results folder.
   """
 
   #parsing commandline arguments
@@ -75,7 +76,7 @@ if __name__ == '__main__':
 
   parser.add_argument('--path_real', type=str, default=None,help='directory of ground truth data')
 
-  parser.add_argument('--path_model', type=str, default=None,help='directory of model')
+  parser.add_argument('--path_model', type=str, default=None,help='path of model')
     
   parser.add_argument('--splits', type=int, default=10,help='Number of splits to average the score over')
 
@@ -83,12 +84,15 @@ if __name__ == '__main__':
 
   parser.add_argument('--object_names', type=str, default=None, help="Comma separated string of objects without any space (Ex: 'cat,cow,dog')-- If none then all objects are considered")
 
+  parser.add_argument('--path_result', type=str, default=None, help='path of result with .csv extension')
+
 
   args = parser.parse_args()
     
   path_fake = args.path_fake
   path_real = args.path_real
   path_model = args.path_model
+  path_result = args.path_result
   splits = args.splits
   inception = args.inception
   object_names = args.object_names
@@ -103,7 +107,7 @@ if __name__ == '__main__':
   scores['MIS']=metric.Mis()
   scores['DS']=metric.Ds()
 
-  #calculate FID and AMS only if ground truth data is also available
+  calculate FID and AMS only if ground truth data is also available
   if path_real is not None: 
     scores['FID']=metric.Fid()
     scores['AMS']=metric.Ams()
@@ -111,8 +115,19 @@ if __name__ == '__main__':
   #make a dataframe from scores
   df=utils.Utils.make_dataframe(scores)
 
-  #save results in results folder with same name as generations folder
-  separated=path_fake.split(os.path.sep)
-  separated[-2]='results'
-  result_path=(os.path.sep).join(separated)+'.csv'
-  df.to_csv(result_path)
+  #if path_result is not given then infer a suitable path based on generations name and type of model
+  if path_result is None:
+    separated=path_fake.split(os.path.sep)
+    separated[-2]='results'
+    if inception.lower()=='true': extension='_inception.csv'
+    else: extension='_resnet.csv'
+    path_result=(os.path.sep).join(separated)+extension
+  
+  #create results directory if not present already
+  dir_result=os.path.dirname(path_result)
+  if not os.path.isdir(dir_result):
+    os.makedirs(dir_result)
+
+  #save results   
+  df.to_csv(path_result)
+  

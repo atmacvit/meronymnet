@@ -53,12 +53,11 @@ class DS:
     num_img=images.shape[0]
 
     for i in range(self.splits):
-
+      
       img=images[i*num_img//self.splits:(i+1)*num_img//self.splits]
       dintra=self.calc_intra(img)
       dinter=self.calc_inter(img)
       ds=(dinter*dintra)**(0.5)
-
       dss.append(ds)
 
     return np.mean(dss), np.std(dss)**2

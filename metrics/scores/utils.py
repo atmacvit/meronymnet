@@ -11,8 +11,9 @@ class Utils:
   def load_images(image_dir,input_shape):
 
     images = []
+    files=glob.glob(image_dir)
 
-    for filepath in glob.glob(image_dir):
+    for filepath in files:
 
         image=cv2.imread(filepath)
         image=image[:,:,::-1]
@@ -20,7 +21,6 @@ class Utils:
         images.append(image)
       
     images=np.array(images)
-    
     return images
 
   #Obtain image sub-directory for a particular object
