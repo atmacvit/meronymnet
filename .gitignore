@@ -1,4 +1,5 @@
 metrics/generations*/
-metrics/scores/__pycache__*
+metrics/scores/__pycache__/
 metrics/results/
 metrics/sample-generations/
+metrics/__pycache__/

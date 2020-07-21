@@ -7,13 +7,13 @@ import os
 class Utils:
 
   @staticmethod
-  def find_path(path_result,path_fake,inception):
+  def find_path(path_result,path_fake,model):
     #if path_result is not given by user then infer a suitable path based on generations name and type of model
     if path_result is None:
       separated=path_fake.split(os.path.sep)
       separated[-2]='results'
-      if inception.lower()=='true': extension='_inception.csv'
-      else: extension='_resnet.csv'
+      extension='_'+model+'.csv'
+      
       path_result=(os.path.sep).join(separated)+extension
     
     #create results directory if not present already
@@ -22,6 +22,13 @@ class Utils:
       os.makedirs(dir_result)
     
     return path_result
+
+  #get object names based on folders present in the directory of generations
+  @staticmethod
+  def get_object_names(image_dir):
+    image_dir=image_dir.rstrip(os.path.sep)+os.path.sep+'*'
+    object_names=list(map(lambda x: x.split(os.path.sep)[-1],glob.glob(image_dir)))
+    return object_names
 
   #load images in a directory and resize them
   @staticmethod
@@ -43,11 +50,8 @@ class Utils:
   #Obtain image sub-directory for a particular object
   @staticmethod
   def get_path(path,obj):
-    if path[-1]!=os.path.sep:
-      return path+os.path.sep+obj+os.path.sep+'*'
-    else:
-      return path+obj+os.path.sep+'*'
-
+    return path.rstrip(os.path.sep)+(os.path.sep)+obj+(os.path.sep)+'*'
+    
   #covert a tuple (mean,std) to mean ± std for all values in dictionary
   @staticmethod
   def to_string(score,precision):
@@ -61,12 +65,13 @@ class Utils:
 
   #Make a combined dataframe from dictionaries containing all types of scores
   @staticmethod
-  def make_dataframe(scores):
+  def make_dataframe(scores,precision):
     dfs={}
     for score in scores:
-      string_scores=Utils.to_string(scores[score])
+      string_scores=Utils.to_string(scores[score],precision)
       dfs[score]=pd.DataFrame(string_scores.items(), columns=['Object', score])
       dfs[score]=dfs[score].set_index('Object',drop=True)
 
     df=pd.concat(list(dfs.values()),axis=1)
+    df=df.T
     return df
