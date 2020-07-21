@@ -1,6 +1,6 @@
 from tensorflow import keras
 from tensorflow.keras.applications.inception_v3 import InceptionV3
-from scores import fid,mis,ins,ds,ams,utils
+from scores import fid,mis,ins,ds,ams,cas,utils
 import argparse
 
 class Metrics:
@@ -67,7 +67,11 @@ class Metrics:
     return ds.DS(self.path_fake,self.model,self.preprocess,self.input_shape,self.splits,self.object_names).calculate()
 
   def Cas(self):
-    pass
+    #CAS is calculated only when real dataset is provided
+    if self.path_real is not None:
+      #remove top layer of model for CAS calculation
+      model_notop= keras.Model(inputs=self.model.input, outputs=self.model.layers[-2].output)
+      return cas.CAS(self.path_real,self.path_fake,model_notop,self.preprocess,self.input_shape,self.splits,self.object_names).calculate()
 
 
 if __name__ == '__main__': 
