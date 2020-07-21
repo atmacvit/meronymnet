@@ -138,6 +138,7 @@ if __name__ == '__main__':
   #Find path(if not given by user) & make a directory for results if not present already
   path_result=utils.Utils.find_path(path_result,path_fake,model)
 
-  #Save results   
-  df.to_csv(path_result)
+  #Save formatted and unformatted results
+  utils.Utils.save_results(df,scores,path_result)   
+  
   
