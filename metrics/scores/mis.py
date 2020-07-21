@@ -28,7 +28,7 @@ class MIS:
     mis_mean=np.mean(kl1)
     mis_std=np.std(kl1)
     
-    return mis_mean, mis_std**2
+    return mis_mean, mis_std
 
   def calculate(self):
 

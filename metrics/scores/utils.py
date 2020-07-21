@@ -6,6 +6,23 @@ import os
 
 class Utils:
 
+  @staticmethod
+  def find_path(path_result,path_fake,inception):
+    #if path_result is not given by user then infer a suitable path based on generations name and type of model
+    if path_result is None:
+      separated=path_fake.split(os.path.sep)
+      separated[-2]='results'
+      if inception.lower()=='true': extension='_inception.csv'
+      else: extension='_resnet.csv'
+      path_result=(os.path.sep).join(separated)+extension
+    
+    #create results directory if not present already
+    dir_result=os.path.dirname(path_result)
+    if not os.path.isdir(dir_result):
+      os.makedirs(dir_result)
+    
+    return path_result
+
   #load images in a directory and resize them
   @staticmethod
   def load_images(image_dir,input_shape):
@@ -31,15 +48,15 @@ class Utils:
     else:
       return path+obj+os.path.sep+'*'
 
-  #covert a tuple (mean,variance) to mean ± variance for all values in dictionary
+  #covert a tuple (mean,std) to mean ± std for all values in dictionary
   @staticmethod
-  def to_string(score):
+  def to_string(score,precision):
     string_score={}
     for obj in score:
       if obj!='mean':
-        string_score[obj]=str(round(score[obj][0],2))+' ± '+str(round(score[obj][1],2))
+        string_score[obj]=str(round(score[obj][0],precision))+' ± '+str(round(score[obj][1],precision))
       else:
-        string_score[obj]=round(score[obj],2)
+        string_score[obj]=round(score[obj],precision)
     return string_score
 
   #Make a combined dataframe from dictionaries containing all types of scores

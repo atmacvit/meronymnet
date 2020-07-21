@@ -42,7 +42,7 @@ class FID:
       fids.append(fid)
 
 
-    return np.mean(fids), np.std(fids)**2
+    return np.mean(fids), np.std(fids)
 
   def calculate(self):
 

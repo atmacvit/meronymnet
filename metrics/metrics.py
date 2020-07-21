@@ -2,7 +2,6 @@ from tensorflow import keras
 from tensorflow.keras.applications.inception_v3 import InceptionV3
 from scores import fid,mis,ins,ds,ams,utils
 import argparse
-import os
 
 class Metrics:
 
@@ -60,11 +59,12 @@ if __name__ == '__main__':
   inception [string] (optional) {'True','False'}=whether to use inceptionV3 model (deafult='True')
   path_model [string] (optional)="path/to/saved_model" [only used when inception is not true]
   splits [int] (optional)=Number for splits per-class (default=10)
+  precision [int] (optional)=Number of decimal digits accurate to which results are required (default=4)
   object_names [string] (optional)=comma separated string without any space like "cow,person,cat" (defaults to all object names)
   path_result [string] (optional)="path/to/result.csv" [if not provided then a suitable path is inferred]
 
   sample-use:
-  python 'path/to/metrics.py' "$path_fake" --path_real "$path_real" --splits="$splits" --inception "$inception" --object_names "$object_names" --path_model "$path_model" --path_result "$path_result"
+  python 'path/to/metrics.py' "$path_fake" --path_real "$path_real" --splits="$splits" --inception "$inception" --object_names "$object_names" --path_model "$path_model" --path_result "$path_result" --precision="$precision"
 
   Saves a csv file of metrics in results folder.
   """
@@ -86,6 +86,8 @@ if __name__ == '__main__':
 
   parser.add_argument('--path_result', type=str, default=None, help='path of result with .csv extension')
 
+  parser.add_argument('--precision', type=int, default=4, help='required precision while calculating mean and std')
+
 
   args = parser.parse_args()
     
@@ -96,6 +98,7 @@ if __name__ == '__main__':
   splits = args.splits
   inception = args.inception
   object_names = args.object_names
+  precision = args.precision
 
   if object_names is not None:
     object_names=object_names.split(',')
@@ -113,20 +116,10 @@ if __name__ == '__main__':
     scores['AMS']=metric.Ams()
 
   #make a dataframe from scores
-  df=utils.Utils.make_dataframe(scores)
+  df=utils.Utils.make_dataframe(scores,precision)
 
-  #if path_result is not given then infer a suitable path based on generations name and type of model
-  if path_result is None:
-    separated=path_fake.split(os.path.sep)
-    separated[-2]='results'
-    if inception.lower()=='true': extension='_inception.csv'
-    else: extension='_resnet.csv'
-    path_result=(os.path.sep).join(separated)+extension
-  
-  #create results directory if not present already
-  dir_result=os.path.dirname(path_result)
-  if not os.path.isdir(dir_result):
-    os.makedirs(dir_result)
+  #find path(if not given by user) & make a directory for results if not present already
+  path_result=utils.Utils.find_path(path_result,path_fake,inception)
 
   #save results   
   df.to_csv(path_result)

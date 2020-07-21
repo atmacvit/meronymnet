@@ -60,7 +60,7 @@ class DS:
       ds=(dinter*dintra)**(0.5)
       dss.append(ds)
 
-    return np.mean(dss), np.std(dss)**2
+    return np.mean(dss), np.std(dss)
 
   def calculate(self):
 

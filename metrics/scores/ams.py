@@ -33,7 +33,7 @@ class AMS:
     for i in range(self.splits):
         part = preds[(i * preds.shape[0] // self.splits):((i + 1) * preds.shape[0] // self.splits), :]
         scores.append(self.am_score(part, ref_preds))
-    return np.mean(scores), np.std(scores)**2
+    return np.mean(scores), np.std(scores)
 
   def calculate(self):
 
