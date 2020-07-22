@@ -77,11 +77,9 @@ Inception Score offers a way to quantitatively evaluate the quality of generated
 1. The conditional label distribution of samples containing meaningful objects should have low entropy
 2.  The variability of the samples should be high, or equivalently, the marginal <img src="https://render.githubusercontent.com/render/math?math=\int p(y_g|x_g = G(z))dz"> should have high entropy.
 
-Finally, these are combined into one score, 
+Thus, these two probability distributions should be very different from each other and the KL Divergence between them should be high. Hence, these are combined into one score as:
 
 ![equation](https://latex.codecogs.com/gif.latex?IS%28G%29%20%3D%20%7B%5Crm%20e%7D%5E%7BE_%7Bx_g%7D%5B%5Cmathbb%7BKL%7D%28p%28y_g%20%7C%20x_g%29%7C%7C%20p%28y_g%29%29%5D%7D%20%3D%20%7B%5Crm%20e%7D%5E%7B%20H%28y_g%29%20-%20E_%7Bx_g%7D%20%5BH%28y_g%7Cx_g%29%5D%20%7D)
-
-
 
 Exponentiation is performed so that results are easier to compare.
 The classifier is Inception Net (version 3) trained on Image Net. The authors found that this score is well-correlated with scores from human annotators. Drawbacks include insensitivity to the prior distribution over labels and not being a proper distance.
@@ -108,7 +106,7 @@ Essentially, MIS can be viewed as a proxy for measuring both intra-class sample 
 
 ### Activation Maximization Score
 
-The entropy term on <img src="https://render.githubusercontent.com/render/math?math=y_g"> in Inception Score is problematic when training data is not evenly distributed over classes, for that <img src="https://render.githubusercontent.com/render/math?math=\argmin H(y_g)"> is a uniform distribution. To take into account the class imbalance in training set, AM score replaces the <img src="https://render.githubusercontent.com/render/math?math=\ H(y_g)"> term in Inception score with the KL divergence between <img src="https://render.githubusercontent.com/render/math?math=\ y_g"> and  <img src="https://render.githubusercontent.com/render/math?math=\ y"> . The AM score is then defined as:
+The entropy term on <img src="https://render.githubusercontent.com/render/math?math=y_g"> in Inception Score is problematic when training data is not evenly distributed over classes, for that <img src="https://render.githubusercontent.com/render/math?math=\argmin H(y_g)"> is a uniform distribution. To take into account the class imbalance in training set, AM score replaces the <img src="https://render.githubusercontent.com/render/math?math=\ H(y_g)"> term in Inception score with the KL divergence between <img src="https://render.githubusercontent.com/render/math?math=\ p(y_g)"> and  <img src="https://render.githubusercontent.com/render/math?math=\ p(y)"> . The AM score is then defined as:
 
 ![equation](https://latex.codecogs.com/gif.latex?AMS%28X%2CG%29%3D%20%5Cmathbb%7BKL%7D%28p%28y%29%20%7C%7C%20p%28y_g%29%29%20&plus;%20E_%7Bx_g%7D%5BH%28y_g%7Cx_g%29%5D)
 
@@ -120,15 +118,17 @@ To measure the diversity of generated samples, DS takes into account both the in
 
 Intra-class diversity is measured by the average (negative) MS-SSIM metric between all pairs of generated images in a given set of generated images:
 
-![equation](https://latex.codecogs.com/gif.latex?d_%7Bintra%7D%28X%29%20%3D%201-%20%5Cfrac1%7B%7CX%7C%5E2%7D%20%5Csum_%7B%28x%2Cx%27%29%5Cin%20X%5Ctimes%20X%7D%7BMS%20%7B%5Ctext%20-%7D%20SSIM%28x%2Cx%27%29%7D)
+![equation](https://latex.codecogs.com/gif.latex?d_%7Bintra%7D%28G%29%20%3D%201-%20%5Cfrac1%7B%7CG%7C%5E2%7D%20%5Csum_%7B%28x_g%2Cx_g%27%29%5Cin%20G%5Ctimes%20G%7D%7BMS%20%7B%5Ctext%20-%7D%20SSIM%28x_g%2Cx_g%27%29%7D)
 
-For inter-class diversity, a pre-trained classifier is used to classify the set of generated images, such that for each sampled image x, there is a classification prediction in the form of a one-hot vector c(x).  Then, the entropy of the average one-hot classification prediction vector is measured to evaluate the diversity between classes in the samples set: 
+where G is a set of generated samples.
 
-![equation](https://latex.codecogs.com/gif.latex?d_%7Binter%7D%28X%29%3D%20%5Cfrac1%7B%5Clog%28N%29%7DH%20%5Cleft%28%5Cfrac1%7B%7CX%7C%7D%20%5Csum_%7Bx%20%5Cin%20X%7D%20c%28x%29%5Cright%29)
+For inter-class diversity, a pre-trained classifier is used to classify the set of generated images, such that for each sampled image <img src="https://render.githubusercontent.com/render/math?math=\ x_g">, there is a classification prediction in the form of a one-hot vector <img src="https://render.githubusercontent.com/render/math?math=\ c(x_g)">.  Then, the entropy of the average one-hot classification prediction vector is measured to evaluate the diversity between classes in the samples set: 
+
+![equation](https://latex.codecogs.com/gif.latex?d_%7Binter%7D%28G%29%3D%20%5Cfrac1%7B%5Clog%28N%29%7DH%20%5Cleft%28%5Cfrac1%7B%7CG%7C%7D%20%5Csum_%7Bx_g%20%5Cin%20G%7D%20c%28x_g%29%5Cright%29)
 
 Finally, the diversity score is defined as the geometric mean of intra class diversity and inter-class diversity
 
-![equation](https://latex.codecogs.com/gif.latex?d%28X%29%3D%20%5Csqrt%7Bd_%7Bintra%7D%28X%29%20%5Cast%20d_%7Binter%7D%28X%29%20%7D)
+![equation](https://latex.codecogs.com/gif.latex?d%28G%29%3D%20%5Csqrt%7Bd_%7Bintra%7D%28G%29%20%5Cast%20d_%7Binter%7D%28G%29%20%7D)
 
 ### Classification Accuracy Score
 
