@@ -52,7 +52,7 @@ class CAS:
     preds_real=np.concatenate(preds_real,axis=0)
     labels_real=np.concatenate(labels_real,axis=0)
 
-    knn_model = KNeighborsClassifier(n_neighbors=10,weights='distance')
+    knn_model = KNeighborsClassifier(n_neighbors=20,weights='distance')
     knn_model.fit(preds_real,labels_real)
     
     return knn_model

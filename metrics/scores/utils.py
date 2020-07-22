@@ -88,4 +88,6 @@ class Utils:
 
     df=pd.concat(list(dfs.values()),axis=1)
     df=df.T
+    df.index.name='Scores'
+
     return df
