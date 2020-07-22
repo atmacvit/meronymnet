@@ -3,7 +3,7 @@ from .utils import Utils
 
 class IS:
 
-  def __init__(self,path,model,preprocess,input_shape,splits,object_names):
+  def __init__(self,path,model,preprocess,input_shape,splits,object_names,num_samples):
 
     self.path=path
     self.model=model
@@ -11,6 +11,7 @@ class IS:
     self.input_shape=input_shape
     self.object_names=object_names
     self.splits= splits
+    self.num_samples=num_samples
 
   #find mean and std for IS of one class
   def calculate_is(self,images):
@@ -48,7 +49,7 @@ class IS:
 
       #load and preprocess data
       obj_path=Utils.get_path(self.path,obj)
-      images=self.preprocess(Utils.load_images(obj_path,self.input_shape))
+      images=self.preprocess(Utils.load_images(obj_path,self.input_shape,self.num_samples))
       
       #calculate scores
       insc=self.calculate_is(images)

@@ -3,7 +3,7 @@ from .utils import Utils
 
 class MIS:
 
-  def __init__(self,path,model,preprocess,input_shape,splits,object_names):
+  def __init__(self,path,model,preprocess,input_shape,splits,object_names,num_samples):
 
     self.path=path
     self.model=model
@@ -11,6 +11,7 @@ class MIS:
     self.input_shape=input_shape
     self.object_names=object_names
     self.splits= splits
+    self.num_samples=num_samples
 
   #find mean and std for MIS of one class
   def calculate_mis(self,part):
@@ -38,7 +39,7 @@ class MIS:
 
       #load and preprocess data
       obj_path=Utils.get_path(self.path,obj)
-      images=self.preprocess(Utils.load_images(obj_path,self.input_shape))
+      images=self.preprocess(Utils.load_images(obj_path,self.input_shape,self.num_samples))
       
       #find predictions
       preds = self.model.predict(images)

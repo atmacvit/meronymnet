@@ -5,7 +5,7 @@ from .utils import Utils
 
 class CAS:
 
-  def __init__(self,path_real,path_fake,model,preprocess,input_shape,splits,object_names):
+  def __init__(self,path_real,path_fake,model,preprocess,input_shape,splits,object_names,num_samples):
 
     self.path_real=path_real
     self.path_fake=path_fake
@@ -14,6 +14,7 @@ class CAS:
     self.input_shape=input_shape
     self.object_names=object_names
     self.splits= splits
+    self.num_samples=num_samples
 
   #find mean and std for FID of one class
   def calculate_cas(self,knn_model,preds_fake,labels_fake):
@@ -41,7 +42,7 @@ class CAS:
 
       #load and preprocess data
       obj_path_real=Utils.get_path(self.path_real,obj)
-      im_real=self.preprocess(Utils.load_images(obj_path_real,self.input_shape))
+      im_real=self.preprocess(Utils.load_images(obj_path_real,self.input_shape,self.num_samples))
 
       #get predictions and labels
       preds_real.append(self.model.predict(im_real))
@@ -67,7 +68,7 @@ class CAS:
 
       #load and preprocess fake data
       obj_path_fake=Utils.get_path(self.path_fake,obj)
-      im_fake=self.preprocess(Utils.load_images(obj_path_fake,self.input_shape))
+      im_fake=self.preprocess(Utils.load_images(obj_path_fake,self.input_shape,self.num_samples))
 
       #get predictions and labels
       preds_fake=self.model.predict(im_fake)

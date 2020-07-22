@@ -46,12 +46,12 @@ class Utils:
 
   #load images in a directory and resize them
   @staticmethod
-  def load_images(image_dir,input_shape):
+  def load_images(image_dir,input_shape,num_samples):
 
     images = []
     files=glob.glob(image_dir)
 
-    for filepath in files:
+    for filepath in files[:num_samples]:
 
         image=cv2.imread(filepath)
         image=image[:,:,::-1]

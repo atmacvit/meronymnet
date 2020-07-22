@@ -4,7 +4,7 @@ from .utils import Utils
 
 class FID:
 
-  def __init__(self,path_real,path_fake,model,preprocess,input_shape,splits,object_names):
+  def __init__(self,path_real,path_fake,model,preprocess,input_shape,splits,object_names,num_samples):
 
     self.path_real=path_real
     self.path_fake=path_fake
@@ -13,6 +13,7 @@ class FID:
     self.input_shape=input_shape
     self.object_names=object_names
     self.splits= splits
+    self.num_samples=num_samples
 
   #find mean and std for FID of one class
   def calculate_fid(self,activation1, activation2):
@@ -53,8 +54,8 @@ class FID:
       #load and preprocess data
       obj_path_real=Utils.get_path(self.path_real,obj)
       obj_path_fake=Utils.get_path(self.path_fake,obj)
-      im_real=self.preprocess(Utils.load_images(obj_path_real,self.input_shape))
-      im_fake=self.preprocess(Utils.load_images(obj_path_fake,self.input_shape))
+      im_real=self.preprocess(Utils.load_images(obj_path_real,self.input_shape,self.num_samples))
+      im_fake=self.preprocess(Utils.load_images(obj_path_fake,self.input_shape,self.num_samples))
 
       #get predictions
       act1 = self.model.predict(im_real)

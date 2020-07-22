@@ -5,7 +5,7 @@ from .utils import Utils
 
 class DS:
 
-  def __init__(self,path,model,preprocess,input_shape,splits,object_names):
+  def __init__(self,path,model,preprocess,input_shape,splits,object_names,num_samples):
 
     self.path=path
     self.model=model
@@ -13,6 +13,7 @@ class DS:
     self.input_shape=input_shape
     self.object_names=object_names
     self.splits= splits
+    self.num_samples=num_samples
 
   #calculate intra class diversity based on ms-ssim
   def calc_intra(self,images):
@@ -70,7 +71,7 @@ class DS:
 
       #load data
       obj_path=Utils.get_path(self.path,obj)
-      images=Utils.load_images(obj_path,self.input_shape)
+      images=Utils.load_images(obj_path,self.input_shape,self.num_samples)
 
       #calculate scores
       score=self.calc_ds(images)
