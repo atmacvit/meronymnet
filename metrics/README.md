@@ -63,12 +63,12 @@ print(scores['IS'])
 ```
 ## Description of Scores
 Throughout this description, we have followed the following convention for notations for the sake of consistency (unless otherwise specified).
-    <img src="https://render.githubusercontent.com/render/math?math=X">= Real data distribution
-    <img src="https://render.githubusercontent.com/render/math?math=G">= Generated data distribution or equivalently the generator function
-    <img src="https://render.githubusercontent.com/render/math?math=(x,y)">= Real sample and its label
-    <img src="https://render.githubusercontent.com/render/math?math=(x_g,y_g)">= Generated sample and its label
-    <img src="https://render.githubusercontent.com/render/math?math=z">= Latent vector
-    <img src="https://render.githubusercontent.com/render/math?math=N">= Number of classes
+* <img src="https://render.githubusercontent.com/render/math?math=X">= Real data distribution
+* <img src="https://render.githubusercontent.com/render/math?math=G">= Generated data distribution or equivalently the generator function
+* <img src="https://render.githubusercontent.com/render/math?math=(x,y)">= Real sample and its label
+* <img src="https://render.githubusercontent.com/render/math?math=(x_g,y_g)">= Generated sample and its label
+* <img src="https://render.githubusercontent.com/render/math?math=z">= Latent vector
+* <img src="https://render.githubusercontent.com/render/math?math=N">= Number of classes
 
 ### Inception Score
 
