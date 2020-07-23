@@ -17,10 +17,14 @@ The script metrics.py contains a class Metrics which can be imported and used to
 #### Use as a script
 
 ```
-python 'path/to/metrics.py' "$path_fake" --path_real "$path_real" --splits="$splits" --model "$model" --object_names "$object_names" --path_model "$path_model" --path_result "$path_result" --precision="$precision" --num_samples="$num_samples"
+$ python 'path/to/metrics.py' "$path_fake" --path_real "$path_real" --splits="$splits" --model "$model" --object_names "$object_names" --path_model "$path_model" --path_result "$path_result" --precision="$precision" --num_samples="$num_samples"
 ```
-
 Saves a csv file of metrics and a JSON file of raw results in results folder.
+
+```
+$ python 'path/to/metrics.py' --help 
+```
+Shows help message for the script.
 
 ##### Positional Arguments:
 ```
