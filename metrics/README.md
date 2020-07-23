@@ -65,8 +65,8 @@ print(scores['IS'])
 Throughout this description, we have followed the following convention for notations for the sake of consistency (unless otherwise specified).
 * <img src="https://render.githubusercontent.com/render/math?math=X">= Real data distribution
 * <img src="https://render.githubusercontent.com/render/math?math=G">= Generated data distribution or equivalently the generator function
-* <img src="https://render.githubusercontent.com/render/math?math=(x,y)">= Real sample and its label
-* <img src="https://render.githubusercontent.com/render/math?math=(x_g,y_g)">= Generated sample and its label
+* <img src="https://render.githubusercontent.com/render/math?math=(x,y)">= Real sample and its label <img src="https://render.githubusercontent.com/render/math?math=(x~X)">
+* <img src="https://render.githubusercontent.com/render/math?math=(x_g,y_g)">= Generated sample and its label <img src="https://render.githubusercontent.com/render/math?math=(x_g~G)">
 * <img src="https://render.githubusercontent.com/render/math?math=z">= Latent vector
 * <img src="https://render.githubusercontent.com/render/math?math=N">= Number of classes
 
@@ -88,7 +88,7 @@ The classifier is Inception Net (version 3) trained on Image Net. The authors fo
 
 FID quantifies the quality of generated samples by first embedding into a feature space given by (a specific layer) of Inception Net. Then, viewing the embedding layer as a continuous multivariate Gaussian, the mean and covariance is estimated for both the generated data and the real data. The Fréchet distance between these two Gaussians is then used to quantify the quality of the samples, i.e. 
 
-![equation](https://latex.codecogs.com/gif.latex?FID%28X%2CG%29%20%3D%20%7B%5CVert%20%5Cmu_X%20-%20%5Cmu_G%20%5CVert%7D_2%5E2&plus;%20Tr%28%5CSigma_G%20&plus;%20%5CSigma_X%20-%202%28%5CSigma_G%5CSigma_X%29%5E%7B%5Cfrac12%7D)
+![equation](https://latex.codecogs.com/gif.latex?FID%28X%2CG%29%20%3D%20%7B%5CVert%20%5Cmu_X%20-%20%5Cmu_G%20%5CVert%7D_2%5E2&plus;%20Tr%28%5CSigma_G%20&plus;%20%5CSigma_X%20-%202%28%5CSigma_G%5CSigma_X%29%5E%7B%5Cfrac12%7D%29)
  
 where <img src="https://render.githubusercontent.com/render/math?math=(\mu_X,\Sigma_X)"> and <img src="https://render.githubusercontent.com/render/math?math=(\mu_G,\Sigma_G)"> are the mean and covariance of the sample embeddings from the data distribution and model distribution respectively. 
 
