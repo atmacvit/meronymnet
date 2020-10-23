@@ -50,7 +50,8 @@ class Utils:
 
     images = []
     files=glob.glob(image_dir)
-
+    print("Image directory = " + str(image_dir))
+    print("Num samples : = " + str(num_samples))
     for filepath in files[:num_samples]:
 
         image=cv2.imread(filepath)
@@ -91,3 +92,15 @@ class Utils:
     df.index.name='Scores'
 
     return df
+  @staticmethod
+  def obtain_aggregate_stats(means, stds, sz):
+    means = np.array(means)
+    stds = np.array(stds)
+    sz = np.array(sz)
+    mean_agg = np.sum(means * sz)/np.sum(sz)
+    denominator = np.sum(sz - 1)
+    numerator = np.sum((sz-1)*(stds**2) + sz*means*means) - np.sum(sz)*mean_agg*mean_agg 
+    std_agg = np.sqrt(numerator/denominator)
+    return mean_agg, std_agg
+
+

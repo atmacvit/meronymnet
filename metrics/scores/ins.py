@@ -44,6 +44,7 @@ class IS:
   def calculate(self):
 
     incp_scores={}
+    sz = []
 
     for obj in self.object_names:
 
@@ -54,8 +55,11 @@ class IS:
       #calculate scores
       insc=self.calculate_is(images)
       incp_scores[obj]=insc
+      sz.append(self.num_samples)
 
     #calculate mean over all classes
-    incp_scores['mean']=np.mean(list(map((lambda x: x[0]), list(incp_scores.values()))))
-    
+    #incp_scores['mean']=np.mean(list(map((lambda x: x[0]), list(incp_scores.values()))))
+    means = list(map((lambda x: x[0]), list(incp_scores.values())))
+    stds = list(map((lambda x: x[1]), list(incp_scores.values())))
+    incp_scores['aggregate'] = Utils.obtain_aggregate_stats(means, stds, sz)
     return incp_scores

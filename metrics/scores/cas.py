@@ -63,7 +63,7 @@ class CAS:
     knn_model=self.fit_knn()
 
     cass={}
-
+    sz = []
     for i,obj in enumerate(self.object_names):
 
       #load and preprocess fake data
@@ -77,8 +77,12 @@ class CAS:
       #calculate cas 
       cas=self.calculate_cas(knn_model,preds_fake,labels_fake)
       cass[obj]=cas
+      sz.append(self.num_samples)
 
     #calculate mean over all classes
-    cass['mean']=np.mean(list(map((lambda x: x[0]), list(cass.values()))))
+    #cass['mean']=np.mean(list(map((lambda x: x[0]), list(cass.values()))))
+    means = list(map((lambda x: x[0]), list(cass.values())))
+    stds = list(map((lambda x: x[1]), list(cass.values())))
+    cass['aggregate'] = Utils.obtain_aggregate_stats(means, stds, sz)
 
     return cass

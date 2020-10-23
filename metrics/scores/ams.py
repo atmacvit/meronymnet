@@ -40,7 +40,7 @@ class AMS:
   def calculate(self):
 
     am_scores={}
-
+    sz = []
     for obj in self.object_names:
       
       #load and preprocess data
@@ -56,9 +56,13 @@ class AMS:
       #calculate scores
       score=self.calculate_am_score(preds_fake, preds_real)
       am_scores[obj]=(score)
+      sz.append(self.num_samples)
 
     #calculate mean over all classes
-    am_scores['mean']=np.mean(list(map((lambda x: x[0]), list(am_scores.values()))))
+    #am_scores['mean']=np.mean(list(map((lambda x: x[0]), list(am_scores.values()))))
+    means = list(map((lambda x: x[0]), list(am_scores.values())))
+    stds = list(map((lambda x: x[1]), list(am_scores.values())))
+    am_scores['aggregate'] = Utils.obtain_aggregate_stats(means, stds, sz)
 
     
     return am_scores

@@ -66,6 +66,7 @@ class DS:
   def calculate(self):
 
     ds={}
+    sz=[]
 
     for obj in self.object_names:
 
@@ -76,9 +77,13 @@ class DS:
       #calculate scores
       score=self.calc_ds(images)
       ds[obj]=score
+      sz.append(self.num_samples)
       
     #calculate mean over all classes
-    ds['mean']=np.mean(list(map((lambda x: x[0]), list(ds.values()))))
+    #ds['mean']=np.mean(list(map((lambda x: x[0]), list(ds.values()))))
+    means = list(map((lambda x: x[0]), list(ds.values())))
+    stds = list(map((lambda x: x[1]), list(ds.values())))
+    ds['aggregate'] = Utils.obtain_aggregate_stats(means, stds, sz)
     
     return ds
     

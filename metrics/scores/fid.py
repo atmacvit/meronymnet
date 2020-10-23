@@ -48,6 +48,7 @@ class FID:
   def calculate(self):
 
     fids={}
+    sz = []
 
     for obj in self.object_names:
 
@@ -64,8 +65,12 @@ class FID:
       #calculate scores
       fid=self.calculate_fid(act1,act2)
       fids[obj]=fid
+      sz.append(self.num_samples)
 
     #calculate mean over all classes
-    fids['mean']=np.mean(list(map((lambda x: x[0]), list(fids.values()))))
+    #fids['mean']=np.mean(list(map((lambda x: x[0]), list(fids.values()))))
+    means = list(map((lambda x: x[0]), list(fids.values())))
+    stds = list(map((lambda x: x[1]), list(fids.values())))
+    fids['aggregate'] = Utils.obtain_aggregate_stats(means, stds, sz)
 
     return fids

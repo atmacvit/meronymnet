@@ -34,7 +34,7 @@ class MIS:
   def calculate(self):
 
     mis={}
-
+    sz = []
     for obj in self.object_names:
 
       #load and preprocess data
@@ -47,9 +47,15 @@ class MIS:
       #calculate scores
       score=self.calculate_mis(preds)
       mis[obj]=score
+      sz.append(self.num_samples)
 
     #calculate mean over all classes
-    mis['mean']=np.mean(list(map((lambda x: x[0]), list(mis.values()))))
+    means = list(map((lambda x: x[0]), list(mis.values())))
+    stds = list(map((lambda x: x[1]), list(mis.values())))
+    #mis['mean'] = mean_agg
+    mis['aggregate'] = Utils.obtain_aggregate_stats(means, stds, sz)
+    #mis['std'] = std_agg
+    
     
     return mis
     
