@@ -71,14 +71,59 @@ def display_objects(object_type,image_list,selected_image,label_col,):
             annotation_dict = json.load(fp)
         temp_image = cv2.imread(img_source+image+'.jpg')
         temp_image = cv2.cvtColor(temp_image, cv2.COLOR_BGR2RGB)
-        
-        contours, _ = cv2.findContours(np.uint8(np.matrix(annotation_dict[object_type]['mask'])),
-                                   cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+        for idx in annotation_dict.keys():
+            contours, _ = cv2.findContours(np.uint8(np.matrix(annotation_dict[idx]['mask'])),
+                                       cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
-        temp_image = cv2.drawContours(temp_image, contours, -1,label_col.tolist() , 1)
+            temp_image = cv2.drawContours(temp_image, contours, -1,label_col.tolist() , 1)
         disp_image.append(temp_image)
      
     st.subheader('Ground Truth')
+    
+    for idx,img in enumerate(disp_image):
+        st.image(img,caption=disp_list[idx])
+
+def display_multi(object_type,image_list,selected_image,label_col,part_dist,bbox_disp):
+    
+    font                   = cv2.FONT_HERSHEY_PLAIN
+    fontScale              = 1
+    fontColor              = (255,255,255)
+    lineType               = 1
+
+    disp_image = []
+    if selected_image=='Random':
+        disp_list = image_list[:-1]
+        random.shuffle(disp_list)
+        disp_list = disp_list[:4]
+    else:
+        disp_list=[selected_image]
+    
+    for image in disp_list:
+        with open(anno_source+object_type+'\\bbox\\'+image+'.json') as fp:
+            annotation_dict = json.load(fp)
+        temp_image = cv2.imread(img_source+image+'.jpg')
+        temp_image = cv2.cvtColor(temp_image, cv2.COLOR_BGR2RGB)
+        
+        for idx in annotation_dict.keys():
+            contours, _ = cv2.findContours(np.uint8(np.matrix(annotation_dict[idx]['mask'])),
+                                       cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+
+            temp_image = cv2.drawContours(temp_image, contours, -1,label_col.tolist() , 1)
+        
+            part_dict = annotation_dict[idx]['parts']
+            if part_dict:
+                for part in part_dict.keys():
+                    contours, _ = cv2.findContours(np.uint8(np.matrix(part_dict[part]['mask'])),
+                               cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+
+                    temp_image = cv2.drawContours(temp_image, contours, -1,label_col.tolist() , 1)
+                    loc = np.mean(contours[0],axis=0).astype(int)[0].tolist()
+                    temp_image = cv2.putText(temp_image,part[0][0],(loc[0],loc[1]),font,fontScale,fontColor,lineType)
+                        
+        disp_image.append(temp_image)
+     
+    st.subheader('Ground Truth')
+    
     
     for idx,img in enumerate(disp_image):
         st.image(img,caption=disp_list[idx])
@@ -104,20 +149,21 @@ def display_parts(object_type,image_list,selected_image,label_col):
         temp_image = cv2.imread(img_source+image+'.jpg')
         temp_image = cv2.cvtColor(temp_image, cv2.COLOR_BGR2RGB)
         
-        contours, _ = cv2.findContours(np.uint8(np.matrix(annotation_dict[object_type]['mask'])),
-                                   cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+        for idx in annotation_dict.keys():
+            contours, _ = cv2.findContours(np.uint8(np.matrix(annotation_dict[idx]['mask'])),
+                                       cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
-        temp_image = cv2.drawContours(temp_image, contours, -1,label_col.tolist() , 1)
+            temp_image = cv2.drawContours(temp_image, contours, -1,label_col.tolist() , 1)
         
-        part_dict = annotation_dict[object_type]['parts']
-        if part_dict:
-            for part in part_dict.keys():
-                contours, _ = cv2.findContours(np.uint8(np.matrix(part_dict[part]['mask'])),
-                           cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+            part_dict = annotation_dict[idx]['parts']
+            if part_dict:
+                for part in part_dict.keys():
+                    contours, _ = cv2.findContours(np.uint8(np.matrix(part_dict[part]['mask'])),
+                               cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
-                temp_image = cv2.drawContours(temp_image, contours, -1,label_col.tolist() , 1)
-                loc = np.mean(contours[0],axis=0).astype(int)[0].tolist()
-                temp_image = cv2.putText(temp_image,part[0][0],(loc[0],loc[1]),font,fontScale,fontColor,lineType)
+                    temp_image = cv2.drawContours(temp_image, contours, -1,label_col.tolist() , 1)
+                    loc = np.mean(contours[0],axis=0).astype(int)[0].tolist()
+                    temp_image = cv2.putText(temp_image,part[0][0],(loc[0],loc[1]),font,fontScale,fontColor,lineType)
                         
         disp_image.append(temp_image)
      
