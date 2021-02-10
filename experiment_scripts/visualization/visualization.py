@@ -8,6 +8,9 @@ import random
 from pathlib import Path  
 import json
 import PIL
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
+import matplotlib.patches as patches
 
 def main():
     # Render the readme as markdown using st.markdown.
@@ -23,7 +26,7 @@ def main():
         st.sidebar.success('To continue select "Run the app".')
     elif app_mode == "Show the source code":
         readme_text.empty()
-        f = open(source+'src/visualization/'+"temp.py", "r")
+        f = open(source+'src/visualization/'+"visualization.py", "r")
         st.code(f.read())
     elif app_mode == "Run the app":
         readme_text.empty()
@@ -48,11 +51,14 @@ def run_the_app():
     label_col = colours[np.where(np.array(labels)==object_type)][0]
     
     part_disp = st.checkbox("Display parts")
+    bbox_disp = st.checkbox("Display bounding box view")
     
-    if part_disp:
-        display_parts(object_type,image_list,selected_image,label_col)
-    else:
-        display_objects(object_type,image_list,selected_image,label_col)
+    display_multi(object_type,image_list,selected_image,label_col,part_disp,bbox_disp)
+    
+#     if part_disp:
+#         display_parts(object_type,image_list,selected_image,label_col)
+#     else:
+#         display_objects(object_type,image_list,selected_image,label_col)
 
 def display_objects(object_type,image_list,selected_image,label_col,):
     
@@ -83,13 +89,19 @@ def display_objects(object_type,image_list,selected_image,label_col,):
     for idx,img in enumerate(disp_image):
         st.image(img,caption=disp_list[idx])
 
-def display_multi(object_type,image_list,selected_image,label_col,part_dist,bbox_disp):
+def display_multi(object_type,image_list,selected_image,label_col,part_disp,bbox_disp):
     
     font                   = cv2.FONT_HERSHEY_PLAIN
     fontScale              = 1
     fontColor              = (255,255,255)
-    lineType               = 1
-
+    lineType               = 2
+    
+    if part_disp & bbox_disp:
+        n=3
+    elif part_disp|bbox_disp:
+        n=2
+    else:
+        n=1
     disp_image = []
     if selected_image=='Random':
         disp_list = image_list[:-1]
@@ -101,32 +113,62 @@ def display_multi(object_type,image_list,selected_image,label_col,part_dist,bbox
     for image in disp_list:
         with open(anno_source+object_type+'\\bbox\\'+image+'.json') as fp:
             annotation_dict = json.load(fp)
-        temp_image = cv2.imread(img_source+image+'.jpg')
-        temp_image = cv2.cvtColor(temp_image, cv2.COLOR_BGR2RGB)
-        
+        raw_image = cv2.imread(img_source+image+'.jpg')
+        raw_image = cv2.cvtColor(raw_image, cv2.COLOR_BGR2RGB)
+        fig, axes = plt.subplots(1,n, figsize = (12,4))
+        ob_image = raw_image.copy()
+        part_image = raw_image.copy()
         for idx in annotation_dict.keys():
             contours, _ = cv2.findContours(np.uint8(np.matrix(annotation_dict[idx]['mask'])),
                                        cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
-            temp_image = cv2.drawContours(temp_image, contours, -1,label_col.tolist() , 1)
-        
+            ob_image = cv2.drawContours(ob_image, contours, -1,label_col.tolist() , 2)
+            if n>1:
+                axes[0].imshow(ob_image)
+                plt.axis('off')  
+            else:
+                axes.imshow(ob_image)
+                plt.axis('off')  
             part_dict = annotation_dict[idx]['parts']
-            if part_dict:
+            if part_dict and part_disp:
                 for part in part_dict.keys():
                     contours, _ = cv2.findContours(np.uint8(np.matrix(part_dict[part]['mask'])),
                                cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
-                    temp_image = cv2.drawContours(temp_image, contours, -1,label_col.tolist() , 1)
+                    part_image = cv2.drawContours(part_image, contours, -1,label_col.tolist() , 1)
                     loc = np.mean(contours[0],axis=0).astype(int)[0].tolist()
-                    temp_image = cv2.putText(temp_image,part[0][0],(loc[0],loc[1]),font,fontScale,fontColor,lineType)
-                        
-        disp_image.append(temp_image)
+                    part_image = cv2.putText(part_image,part[0][0],(loc[0],loc[1]),font,fontScale,fontColor,lineType)
+                
+            if part_dict and bbox_disp:
+                bb_image = raw_image.copy()
+                if n>2:
+                    axes[2].imshow(raw_image)
+                    plt.axis('off')  
+                    t = 2
+                else:
+                    axes[1].imshow(raw_image)
+                    plt.axis('off')  
+                    t = 1
+                for part in part_dict.keys():
+                    
+#                     contours, _ = cv2.findContours(np.uint8(np.matrix(part_dict[part]['mask'])),
+#                                cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+                    x_min,y_min,x_max,y_max =part_dict[part]['bbox']
+                    rect = patches.Rectangle((y_min,x_min),y_max-y_min,x_max-x_min,
+                                             linewidth=1,edgecolor='r',facecolor='none')
+            
+                    axes[t].add_patch(rect)
+            if part_disp:
+                axes[1].imshow(part_image)
+            
+        st.pyplot(fig)
+        #disp_image.append(temp_image)
      
     st.subheader('Ground Truth')
     
     
-    for idx,img in enumerate(disp_image):
-        st.image(img,caption=disp_list[idx])
+    #for idx,img in enumerate(disp_image):
+    #    st.image(img,caption=disp_list[idx])
 
 def display_parts(object_type,image_list,selected_image,label_col):
     
