@@ -26,7 +26,23 @@ We introduce MeronymNet, a novel hierarchical approach for con- trollable, part-
 ```
 pip install -r requirements.txt
 ```
+After installing the following dependencies run the bash scripts given.
 
+The code for the training and inference our models is in the directory ```Meronymnet```, repurposed baselines can be found in ```baselines``` and for metrics and visualisation please go to the directory ```experiment_scripts```.
+
+
+To preprocess and get the data run.
+```
+sh preprocess.sh
+```
+To train the model run the train script.
+```
+sh train.sh
+```
+To get the generations from inference files, get the pretrained models in the directory and run inference script.
+```
+sh inference.sh
+```
 ## Datasets
 ### PascalParts
 - Access the dataset from <a href="http://roozbehm.info/pascal-parts/pascal-parts.html">PascalParts</a>
