@@ -226,7 +226,7 @@ class_dic = {0:'cow',1:'sheep',2:'bird',3:'person',4:'cat',5:'dog',6:'horse',7:'
 
 with tf.Session() as sess:
   sess.run(tf.global_variables_initializer())
-  saver.restore(sess, "./save_bitmaps_colab_new.ckpt")
+  saver.restore(sess, "../models/save_bitmaps_colab_new.ckpt")
   start = 0
   for ind_ in range(len(bb)//batch_size):
 

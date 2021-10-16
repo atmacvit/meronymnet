@@ -338,7 +338,7 @@ label_vec_sketch = []
 bbx_gen_sketch = []
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
-    saver.restore(sess, "./boxvae.ckpt")
+    saver.restore(sess, "../models/boxvae.ckpt")
     object_names = ['bicycle','sheep','bird','motorbike','person','dog','horse','cow','aeroplane','cat']
     for object_name in object_names:
         ii = 0
