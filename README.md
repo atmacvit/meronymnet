@@ -8,9 +8,9 @@ We introduce MeronymNet, a novel hierarchical approach for con- trollable, part-
   <tr>
   <td width=400px align=center>
   <!-- <p style="margin-top:4px;"></p> -->
-  <a href="https://people.eecs.berkeley.edu/~sazadi/SBGAN/main.pdf"><img style="height:200px" src="https://people.eecs.berkeley.edu/~sazadi/SBGAN/thumbnail.jpg"/></a>
+  <a href="https://drive.google.com/file/d/1NnY4tcV1wnlSWMzT_Ae6hH6v5l8GCIrX/view?usp=sharing"><img style="height:200px" src="https://github.com/meronymnet/meronymnet.github.io/blob/main/resources/Paper_crop.png"/></a>
   <center>
-  <span style="font-size:20pt"><a href="https://drive.google.com/file/d/1NnY4tcV1wnlSWMzT_Ae6hH6v5l8GCIrX/view">[Paper]</a>&nbsp;
+  <span style="font-size:20pt"><a href="hhttps://drive.google.com/file/d/1NnY4tcV1wnlSWMzT_Ae6hH6v5l8GCIrX/view?usp=sharing">[Paper]</a>&nbsp;
   </center>
   </td>
   </tr>
